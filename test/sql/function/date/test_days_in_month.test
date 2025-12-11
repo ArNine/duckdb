@@ -1,0 +1,52 @@
+# name: test/sql/function/date/test_days_in_month.test
+# description: test days_in_month function
+# group: [date]
+
+statement ok
+PRAGMA enable_verification
+
+
+query II
+select days_in_month(2025, cast(i as int)), i from range(1, 12) tbl(i);
+----
+31	1
+28	2
+31	3
+30	4
+31	5
+30	6
+31	7
+31	8
+30	9
+31	10
+30	11
+
+query II
+select days_in_month(2024, cast(i as int)), i from range(1, 12) tbl(i);
+----
+31	1
+29	2
+31	3
+30	4
+31	5
+30	6
+31	7
+31	8
+30	9
+31	10
+30	11
+
+query I
+select days_in_month(date '2024-03-11');
+----
+31
+
+query I
+select days_in_month(timestamp '2024-02-01 10:30:00');
+----
+29
+
+
+
+
+

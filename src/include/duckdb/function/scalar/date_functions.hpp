@@ -45,4 +45,14 @@ struct TryStrpTimeFun {
 	static ScalarFunctionSet GetFunctions();
 };
 
+struct DaysInMonthFun {
+	static constexpr const char *Name = "days_in_month";
+	static constexpr const char *Parameters = "year::INTEGER,month::INTEGER\001date::DATE\001timestamp::TIMESTAMP";
+	static constexpr const char *Description = "Returns the number of days in the specified month of the given year.\001Returns the number of days in the month of the given date.\001Returns the number of days in the month of the given timestamp.";
+	static constexpr const char *Example = "days_in_month(2024, 2)\001days_in_month(date '2024-02-15')\001days_in_month(timestamp '2024-02-15 10:30:00')";
+	static constexpr const char *Categories = "\001\001";
+
+	static ScalarFunctionSet GetFunctions();
+};
+
 } // namespace duckdb

@@ -37,5 +37,34 @@
         "example": "try_strptime('Wed, 1 January 1992 - 08:38:40 PM', '%a, %-d %B %Y - %I:%M:%S %p')",
         "type": "scalar_function_set",
         "struct": "TryStrpTimeFun"
+    },
+    {
+        "name": "days_in_month",
+        "variants": [
+            {
+                "parameters": [
+                    {"name": "year", "type": "INTEGER"},
+                    {"name": "month", "type": "INTEGER"}
+                ],
+                "description": "Returns the number of days in the specified month of the given year.",
+                "example": "days_in_month(2024, 2)"
+            },
+            {
+                "parameters": [
+                    {"name": "date", "type": "DATE"}
+                ],
+                "description": "Returns the number of days in the month of the given date.",
+                "example": "days_in_month(date '2024-02-15')"
+            },
+            {
+                "parameters": [
+                    {"name": "timestamp", "type": "TIMESTAMP"}
+                ],
+                "description": "Returns the number of days in the month of the given timestamp.",
+                "example": "days_in_month(timestamp '2024-02-15 10:30:00')"
+            }
+        ],
+        "type": "scalar_function_set",
+        "struct": "DaysInMonthFun"
     }
 ]
