@@ -1,0 +1,95 @@
+# name: test/sql/function/numeric/test_max_intersections.test
+# description: Test max_intersections aggregate function
+# group: [numeric]
+
+statement ok
+PRAGMA enable_verification
+
+# Test basic functionality
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 3), (2, 4), (5, 6) AS t(left_val, right_val);
+----
+2
+
+# Test no overlapping intervals
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 2), (3, 4), (5, 6) AS t(left_val, right_val);
+----
+1
+
+# Test all intervals overlap at one point
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 5), (2, 6), (3, 7), (4, 8) AS t(left_val, right_val);
+----
+4
+
+# Test empty result
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (NULL, NULL) AS t(left_val, right_val) WHERE left_val IS NOT NULL;
+----
+0
+
+# Test with NULL values (should be ignored)
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 3), (NULL, NULL), (2, 4) AS t(left_val, right_val);
+----
+2
+
+# Test identical intervals
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 3), (1, 3), (1, 3) AS t(left_val, right_val);
+----
+3
+
+# Test single interval
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 5) AS t(left_val, right_val);
+----
+1
+
+# Test touching intervals (should not overlap)
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (1, 2), (2, 3), (3, 4) AS t(left_val, right_val);
+----
+1
+
+# Test complex case with multiple overlaps
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES 
+    (1, 4), (2, 5), (3, 6), (7, 9), (8, 10), (11, 12) AS t(left_val, right_val);
+----
+3
+
+# Test with negative values
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (-5, -2), (-4, -1), (-3, 0) AS t(left_val, right_val);
+----
+3
+
+# Test invalid intervals (left > right should be ignored)
+query I
+SELECT max_intersections(left_val, right_val) FROM VALUES (5, 1), (2, 4), (3, 6) AS t(left_val, right_val);
+----
+2
+
+# Test with BIGINT values
+query I
+SELECT max_intersections(left_val::BIGINT, right_val::BIGINT) FROM VALUES 
+    (1000000000000, 2000000000000), 
+    (1500000000000, 2500000000000), 
+    (3000000000000, 4000000000000) AS t(left_val, right_val);
+----
+2
+
+# Test grouped aggregation
+query II
+SELECT group_id, max_intersections(left_val, right_val) 
+FROM VALUES 
+    (1, 1, 3), (1, 2, 4), (1, 5, 6),
+    (2, 1, 5), (2, 2, 6), (2, 3, 7)
+AS t(group_id, left_val, right_val) 
+GROUP BY group_id 
+ORDER BY group_id;
+----
+1	2
+2	3
