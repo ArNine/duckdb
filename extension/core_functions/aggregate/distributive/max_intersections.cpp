@@ -187,13 +187,15 @@ struct MaxIntersectionsFunction {
 } // namespace
 
 AggregateFunction MaxIntersectionsFun::GetFunction() {
-	auto function =
-	    AggregateFunction::BinaryAggregate<MaxIntersectionsState, int64_t, int64_t, int64_t, MaxIntersectionsFunction>(
-	        LogicalType::BIGINT, LogicalType::BIGINT, LogicalType::BIGINT);
+	auto function = AggregateFunction::BinaryAggregate<MaxIntersectionsState, int64_t, int64_t, int64_t,
+	                                                   MaxIntersectionsFunction, AggregateDestructorType::LEGACY>(
+	    LogicalType::BIGINT, LogicalType::BIGINT, LogicalType::BIGINT);
 
 	function.name = "max_intersections";
 	function.SetOrderDependent(AggregateOrderDependent::NOT_ORDER_DEPENDENT);
 	function.SetNullHandling(FunctionNullHandling::SPECIAL_HANDLING);
+	function.SetStateDestructorCallback(
+	    AggregateFunction::StateDestroy<MaxIntersectionsState, MaxIntersectionsFunction>);
 
 	return function;
 }

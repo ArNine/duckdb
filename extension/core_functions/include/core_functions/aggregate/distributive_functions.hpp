@@ -304,7 +304,7 @@ struct MaxIntersectionsFun {
 	static constexpr const char *Name = "max_intersections";
 	static constexpr const char *Parameters = "left,right";
 	static constexpr const char *Description = "Returns the maximum number of overlapping intervals from pairs of (left, right) values.";
-	static constexpr const char *Example = "max_intersections(start_time, end_time)";
+	static constexpr const char *Example = "max_intersections(left, right)";
 	static constexpr const char *Categories = "";
 	static AggregateFunction GetFunction();
 };
