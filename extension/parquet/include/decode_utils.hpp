@@ -69,11 +69,20 @@ public:
 			count = remainder;
 		}
 		// Optimized version: calculate the number of bytes to skip directly
-		for (idx_t i = 0; i < count; i++) {
-			bitpack_pos += width;
-			src.unsafe_inc((bitpack_pos - 1) / BITPACK_DLEN);
-			bitpack_pos = (bitpack_pos - 1) % BITPACK_DLEN + 1;
-		}
+		idx_t max_capacity = ~0ull >> 8;
+		idx_t skip = 0, pos = bitpack_pos;
+
+		if (count > max_capacity) {
+            skip += (count * width - 1) / BITPACK_DLEN * (count / max_capacity);
+            pos += ((count * width - 1) % BITPACK_DLEN + 1) * (count / max_capacity);
+            count = count % max_capacity;
+        }
+        skip += (count * width - 1) / BITPACK_DLEN;
+        pos += (count * width - 1) % BITPACK_DLEN + 1;
+        skip += (pos - 1) / BITPACK_DLEN;
+        pos = (pos - 1) % BITPACK_DLEN + 1;
+		src.unsafe_inc(skip);
+		bitpack_pos = pos;
 	}
 
 	template <class T>
