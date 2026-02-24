@@ -19,6 +19,21 @@ class TryOperatorBinder : public ExpressionBinder {
 public:
 	TryOperatorBinder(Binder &binder, ClientContext &context);
 
+	bool TryResolveAliasReference(ColumnRefExpression &colref, idx_t depth, bool root_expression, BindResult &result,
+	                              unique_ptr<ParsedExpression> &expr_ptr) override {
+		if (!stored_binder) {
+			return false;
+		}
+		return stored_binder->TryResolveAliasReference(colref, depth, root_expression, result, expr_ptr);
+	}
+
+	bool DoesColumnAliasExist(const ColumnRefExpression &colref) override {
+		if (!stored_binder) {
+			return false;
+		}
+		return stored_binder->DoesColumnAliasExist(colref);
+	}
+
 protected:
 	BindResult BindAggregate(FunctionExpression &expr, AggregateFunctionCatalogEntry &function, idx_t depth) override;
 };
