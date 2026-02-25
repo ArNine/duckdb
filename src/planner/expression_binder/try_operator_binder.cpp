@@ -17,6 +17,7 @@ bool TryOperatorBinder::TryResolveAliasReference(ColumnRefExpression &colref, id
 	if (!stored_binder) {
 		return false;
 	}
+
 	return stored_binder->TryResolveAliasReference(colref, depth, root_expression, result, expr_ptr);
 }
 
